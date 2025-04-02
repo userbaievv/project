@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Бронирование{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Выберите столик</h2>
+
+<div class="row mt-4">
+    {% for table in tables %}
+    <div class="col-md-4">
+        <div class="card mb-3 {% if table.is_booked %}border-danger{% else %}border-success{% endif %}">
+            <div class="card-body text-center">
+                <h5 class="card-title">Столик №{{ table.number }}</h5>
+                {% if not table.is_booked %}
+                <form method="post" action="{% url 'book_table' table.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success w-100">Забронировать</button>
+                </form>
+                {% else %}
+                <span class="badge bg-danger">Забронирован</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

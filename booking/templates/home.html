@@ -1,6 +1,27 @@
 {% extends 'base.html' %}
 
+{% block title %}Главная{% endblock %}
+
 {% block content %}
-<h2>Welcome to the Table Booking System</h2>
-<p>Select a restaurant and book your table.</p>
+<div class="text-center">
+    <h2 class="mb-4">Добро пожаловать в "Гурман"!</h2>
+    <p class="lead">Лучшее место для уютного ужина с семьей и друзьями.</p>
+</div>
+
+{% if not user.is_authenticated %}
+<div class="card mx-auto mt-4" style="max-width: 400px;">
+    <div class="card-body">
+        <h4 class="card-title text-center">Регистрация</h4>
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary w-100 mt-3">Зарегистрироваться</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-success text-center mt-4">
+    Вы уже зарегистрированы! Перейдите в <a href="{% url 'booking' %}" class="alert-link">бронирование</a>.
+</div>
+{% endif %}
 {% endblock %}
