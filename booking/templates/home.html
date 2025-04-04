@@ -12,10 +12,50 @@
 <div class="card mx-auto mt-4" style="max-width: 400px;">
     <div class="card-body">
         <h4 class="card-title text-center">Регистрация</h4>
-        <form method="post" action="{% url 'register' %}">
+        <form method="post" action="{% url 'home' %}" id="registration-form">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary w-100 mt-3">Зарегистрироваться</button>
+
+            <div class="mb-3">
+                <label class="form-label">Имя пользователя:</label>
+                <input
+                    type="text"
+                    name="username"
+                    class="form-control"
+                    required
+                    placeholder="Введите имя пользователя"
+                >
+                <small class="form-text text-muted">Только буквы, цифры и @/./+/-/_</small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Пароль:</label>
+                <input
+                    type="password"
+                    name="password1"
+                    class="form-control"
+                    required
+                    placeholder=""
+                    id="password-field"
+                >
+                <small class="form-text text-muted">Не менее 5 символов</small>
+                <div id="password-error" class="text-danger small mt-1" style="display: none;">
+                    Пароль должен содержать минимум 5 символов
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Подтверждение пароля:</label>
+                <input
+                    type="password"
+                    name="password2"
+                    class="form-control"
+                    required
+                    placeholder=""
+                >
+                <small class="form-text text-muted">Введите пароль ещё раз</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
         </form>
     </div>
 </div>
@@ -24,4 +64,34 @@
     Вы уже зарегистрированы! Перейдите в <a href="{% url 'booking' %}" class="alert-link">бронирование</a>.
 </div>
 {% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registration-form');
+    const passwordField = document.getElementById('password-field');
+    const passwordError = document.getElementById('password-error');
+
+    form.addEventListener('submit', function(e) {
+        if (passwordField.value.length < 5) {
+            e.preventDefault();
+            passwordError.style.display = 'block';
+            passwordField.classList.add('is-invalid');
+        } else {
+            passwordError.style.display = 'none';
+            passwordField.classList.remove('is-invalid');
+        }
+    });
+
+    passwordField.addEventListener('input', function() {
+        if (this.value.length < 5) {
+            passwordError.style.display = 'block';
+            this.classList.add('is-invalid');
+        } else {
+            passwordError.style.display = 'none';
+            this.classList.remove('is-invalid');
+        }
+    });
+});
+</script>
+
 {% endblock %}
