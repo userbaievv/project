@@ -62,3 +62,42 @@ def register_view(request):
     else:
         form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
+
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Reservation
+from .forms import ReservationForm
+
+# Create
+def reservation_create(request):
+    if request.method == 'POST':
+        form = ReservationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('reservation_list')
+    else:
+        form = ReservationForm()
+    return render(request, 'reservation_form.html', {'form': form})
+
+# Read (список)
+def reservation_list(request):
+    reservations = Reservation.objects.all()
+    return render(request, 'reservation_list.html', {'reservations': reservations})
+
+# Update
+def reservation_update(request, pk):
+    reservation = get_object_or_404(Reservation, pk=pk)
+    form = ReservationForm(request.POST or None, instance=reservation)
+    if form.is_valid():
+        form.save()
+        return redirect('reservation_list')
+    return render(request, 'reservation_form.html', {'form': form})
+
+# Delete
+def reservation_delete(request, pk):
+    reservation = get_object_or_404(Reservation, pk=pk)
+    if request.method == 'POST':
+        reservation.delete()
+        return redirect('reservation_list')
+    return render(request, 'reservation_confirm_delete.html', {'reservation': reservation})

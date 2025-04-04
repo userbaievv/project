@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Бронирования</h2>
+<a href="{% url 'reservation_create' %}" class="btn btn-success mb-3">Новое бронирование</a>
+
+<table class="table table-striped">
+    <tr>
+        <th>Клиент</th><th>Дата</th><th>Столик</th><th>Действия</th>
+    </tr>
+    {% for r in reservations %}
+    <tr>
+        <td>{{ r.customer_name }}</td>
+        <td>{{ r.date }}</td>
+        <td>{{ r.table }}</td>
+        <td>
+            <a href="{% url 'reservation_update' r.pk %}" class="btn btn-sm btn-warning">Редактировать</a>
+            <a href="{% url 'reservation_delete' r.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
