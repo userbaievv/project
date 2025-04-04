@@ -4,7 +4,8 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Table
 from .forms import CustomUserCreationForm
-
+from django.shortcuts import render, redirect
+from .forms import RegistrationForm
 def home(request):
     form = CustomUserCreationForm()
     if request.method == "POST":
@@ -48,4 +49,16 @@ def register(request):
             user = form.save()
             login(request, user)
             return redirect('booking')
+    return render(request, 'register.html', {'form': form})
+
+
+
+def register_view(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()  # сохраняет в таблицу booking_registereduser
+            return redirect('home')  # или куда хочешь
+    else:
+        form = RegistrationForm()
     return render(request, 'register.html', {'form': form})
