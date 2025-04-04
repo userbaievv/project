@@ -11,6 +11,7 @@ class Table(models.Model):
     number = models.IntegerField()
     seats = models.IntegerField()
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    is_booked = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Table {self.number} ({self.seats} seats)"
