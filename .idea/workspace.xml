@@ -4,21 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4f19ece5-9375-4e7d-a4d5-81731cf72939" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/pythonProject_CRUD.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/project/booking/templates/reservation_confirm_delete.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/project/booking/templates/reservation_form.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/project/booking/templates/reservation_list.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project/booking/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/booking/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project/booking/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/project/booking/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project/booking/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/booking/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project/booking/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/project/booking/views.py" afterDir="false" />
+    <list default="true" id="4f19ece5-9375-4e7d-a4d5-81731cf72939" name="Changes" comment="CRUD_project">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/project" beforeDir="false" afterPath="$PROJECT_DIR$/project" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,6 +21,7 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PUSH_AUTO_UPDATE" value="true" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/project" />
   </component>
   <component name="ProjectColorInfo">{
@@ -103,12 +92,36 @@
       <option name="presentableId" value="Default" />
       <updated>1743945544618</updated>
       <workItem from="1743945545969" duration="68000" />
-      <workItem from="1743945661334" duration="2606000" />
+      <workItem from="1743945661334" duration="5476000" />
     </task>
+    <task id="LOCAL-00001" summary="CRUD_project">
+      <option name="closed" value="true" />
+      <created>1743948411451</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1743948411451</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="CRUD_project" />
+    <option name="LAST_COMMIT_MESSAGE" value="CRUD_project" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
