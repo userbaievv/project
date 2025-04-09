@@ -16,14 +16,6 @@ class Table(models.Model):
     def __str__(self):
         return f"Table {self.number} ({self.seats} seats)"
 
-class Reservation(models.Model):
-    table = models.ForeignKey(Table, on_delete=models.CASCADE)
-    customer_name = models.CharField(max_length=100)
-    date = models.DateTimeField()
-
-    def __str__(self):
-        return f"{self.customer_name} - {self.date}"
-
 class CustomUser(models.Model):
     username = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
@@ -38,3 +30,12 @@ class RegisteredUser(models.Model):
 
     def __str__(self):
         return self.username
+
+class Reservation(models.Model):
+    table = models.ForeignKey(Table, on_delete=models.CASCADE)
+    customer_name = models.CharField(max_length=100)
+    date = models.DateTimeField()
+    user = models.ForeignKey(RegisteredUser, on_delete=models.CASCADE,default=1)
+
+    def __str__(self):
+        return f"{self.customer_name} - {self.date}"
