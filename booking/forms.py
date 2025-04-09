@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
-from .models import RegisteredUser
+from .models import RegisteredUser, BookingTable
 
 class CustomUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
@@ -22,4 +22,14 @@ class RegistrationForm(forms.ModelForm):
         fields = ['username', 'email', 'password']
         widgets = {
             'password': forms.PasswordInput()
+        }
+
+
+class BookingForm(forms.ModelForm):
+    class Meta:
+        model = BookingTable
+        fields = ['table_number', 'guests_count', 'booking_date', 'booking_time']
+        widgets = {
+            'booking_date': forms.DateInput(attrs={'type': 'date'}),
+            'booking_time': forms.TimeInput(attrs={'type': 'time'}),
         }

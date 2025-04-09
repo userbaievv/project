@@ -1,31 +1,14 @@
-
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Table
-from .forms import CustomUserCreationForm
+from django.contrib.auth.decorators import login_required
+from .models import BookingTable, RegisteredUser
+from .forms import RegistrationForm ,CustomUserCreationForm, BookingForm
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm
+
 def home(request):
-    form = CustomUserCreationForm()
-    if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('booking')
-    return render(request, 'home.html', {'form': form})
-
-def booking(request):
-    tables = Table.objects.all()
-    return render(request, 'booking.html', {'tables': tables})
-
-def book_table(request, table_id):
-    table = Table.objects.get(id=table_id)
-    if not table.is_booked:
-        table.is_booked = True
-        table.save()
-    return redirect('booking')
+    return render(request, 'booking/home.html')
 
 def login_view(request):
     form = AuthenticationForm()
@@ -34,31 +17,64 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('booking')
-    return render(request, 'login.html', {'form': form})
+            return redirect('booking_list')
+    return render(request, 'booking/login.html', {'form': form})
 
 def logout_view(request):
     logout(request)
     return redirect('home')
 
-def register(request):
-    form = CustomUserCreationForm()
-    if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('booking')
-    return render(request, 'register.html', {'form': form})
-
-
+from django.contrib.auth import login
 
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    if request.method == "POST":
+        username = request.POST['username']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+
+        if password1 != password2 or len(password1) < 5:
+            return redirect('home')  # или показать ошибку
+
+        user = RegisteredUser.objects.create_user(username=username, password=password1)
+        login(request, user)
+        return redirect('booking_list')
+
+    return redirect('home')
+
+
+@login_required
+def booking_list(request):
+    bookings = BookingTable.objects.filter(customer=request.user)
+    return render(request, 'booking/booking_list.html', {'bookings': bookings})
+
+@login_required
+def booking_create(request):
+    form = BookingForm(request.POST or None)
+    if form.is_valid():
+        booking = form.save(commit=False)
+        booking.customer = request.user
+        booking.save()
+        return redirect('booking_list')
+    return render(request, 'booking/booking_form.html', {'form': form})
+
+@login_required
+def booking_update(request, pk):
+    booking = get_object_or_404(BookingTable, pk=pk)
+    if booking.customer != request.user:
+        return redirect('booking_list')
+    form = BookingForm(request.POST or None, instance=booking)
+    if form.is_valid():
+        form.save()
+        return redirect('booking_list')
+    return render(request, 'booking/booking_form.html', {'form': form})
+
+@login_required
+def booking_delete(request, pk):
+    booking = get_object_or_404(BookingTable, pk=pk)
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            form.save()  # сохраняет в таблицу booking_registereduser
-            return redirect('home')  # или куда хочешь
-    else:
-        form = RegistrationForm()
-    return render(request, 'register.html', {'form': form})
+        booking.delete()
+        return redirect('booking_list')
+    return render(request, 'booking/booking_confirm_delete.html', {'booking': booking})

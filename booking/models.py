@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 class Restaurant(models.Model):
     name = models.CharField(max_length=100)
@@ -22,9 +23,9 @@ class CustomUser(models.Model):
     password = models.CharField(max_length=128)
 
 
-class RegisteredUser(models.Model):
+class RegisteredUser(AbstractUser):
     username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=False)
     password = models.CharField(max_length=128)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -39,3 +40,15 @@ class Reservation(models.Model):
 
     def __str__(self):
         return f"{self.customer_name} - {self.date}"
+
+from django.conf import settings
+
+class BookingTable(models.Model):
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    table_number = models.IntegerField()
+    guests_count = models.PositiveIntegerField()
+    booking_date = models.DateField()
+    booking_time = models.TimeField()
+
+    def __str__(self):
+        return f"Столик {self.table_number} - {self.customer.username}"
