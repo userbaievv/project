@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .models import BookingTable, RegisteredUser
-from .forms import RegistrationForm ,CustomUserCreationForm, BookingForm
+from .forms import RegistrationForm ,CustomUserCreationForm, BookingForm, BookingFilterForm
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm
 
@@ -48,7 +48,24 @@ def register_view(request):
 @login_required
 def booking_list(request):
     bookings = BookingTable.objects.filter(customer=request.user)
-    return render(request, 'booking/booking_list.html', {'bookings': bookings})
+    form = BookingFilterForm(request.GET)
+
+    if form.is_valid():
+        date = form.cleaned_data.get('date')
+        guests_count = form.cleaned_data.get('guests_count')
+        sort_by = form.cleaned_data.get('sort_by')
+
+        if date:
+            bookings = bookings.filter(booking_date=date)
+        if guests_count:
+            bookings = bookings.filter(guests_count=guests_count)
+        if sort_by:
+            bookings = bookings.order_by(sort_by)
+
+    return render(request, 'booking/booking_list.html', {
+        'bookings': bookings,
+        'filter_form': form,
+    })
 
 @login_required
 def booking_create(request):

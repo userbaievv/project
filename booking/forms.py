@@ -33,3 +33,16 @@ class BookingForm(forms.ModelForm):
             'booking_date': forms.DateInput(attrs={'type': 'date'}),
             'booking_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+
+class BookingFilterForm(forms.Form):
+    date = forms.DateField(required=False, label='Дата', widget=forms.DateInput(attrs={'type': 'date'}))
+    guests_count = forms.IntegerField(required=False, label='Кол-во гостей')
+    sort_by = forms.ChoiceField(
+        required=False,
+        choices=[
+            ('booking_date', 'Дата'),
+            ('booking_time', 'Время'),
+            ('table_number', 'Номер стола'),
+        ],
+        label='Сортировать по'
+    )

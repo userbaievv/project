@@ -2,7 +2,27 @@
 {% block content %}
 <div class="container mt-4">
   <h2>Мои бронирования</h2>
+
+  <form method="get" class="mb-3 d-flex gap-3 align-items-end">
+    <div>
+      {{ filter_form.date.label_tag }}<br>
+      {{ filter_form.date }}
+    </div>
+    <div>
+      {{ filter_form.guests_count.label_tag }}<br>
+      {{ filter_form.guests_count }}
+    </div>
+    <div>
+      {{ filter_form.sort_by.label_tag }}<br>
+      {{ filter_form.sort_by }}
+    </div>
+    <div>
+      <button type="submit" class="btn btn-secondary mt-4">Фильтр</button>
+    </div>
+  </form>
+
   <a href="{% url 'booking_create' %}" class="btn btn-success mb-3">Создать новое бронирование</a>
+
   <table class="table table-bordered">
     <thead>
       <tr>
