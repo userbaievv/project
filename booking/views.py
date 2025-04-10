@@ -49,6 +49,10 @@ def register_view(request):
 def booking_list(request):
     bookings = BookingTable.objects.filter(customer=request.user)
     form = BookingFilterForm(request.GET)
+    if request.user.is_superuser:
+        bookings = BookingTable.objects.all()
+    else:
+        bookings = BookingTable.objects.filter(customer=request.user)
 
     if form.is_valid():
         date = form.cleaned_data.get('date')

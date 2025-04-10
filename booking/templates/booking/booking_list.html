@@ -30,6 +30,9 @@
         <th>Кол-во гостей</th>
         <th>Дата</th>
         <th>Время</th>
+        {% if user.is_superuser %}
+          <th>Пользователь</th>
+        {% endif %}
         <th>Действия</th>
       </tr>
     </thead>
@@ -40,6 +43,9 @@
         <td>{{ booking.guests_count }}</td>
         <td>{{ booking.booking_date }}</td>
         <td>{{ booking.booking_time }}</td>
+        {% if user.is_superuser %}
+          <td>{{ booking.customer.username }}</td>
+        {% endif %}
         <td>
           <a href="{% url 'booking_update' booking.pk %}" class="btn btn-warning btn-sm">Изменить</a>
           <a href="{% url 'booking_delete' booking.pk %}" class="btn btn-danger btn-sm">Удалить</a>
