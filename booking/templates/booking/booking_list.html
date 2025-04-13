@@ -58,5 +58,33 @@
       {% endfor %}
     </tbody>
   </table>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      fetch("/api/bookings/")
+              .then(response => response.json())
+              .then(data => {
+                const tbody = document.querySelector("tbody");
+                tbody.innerHTML = ""; // очищаем старые строки
+
+                data.forEach(booking => {
+                  const row = document.createElement("tr");
+                  row.innerHTML = `
+                    <td>${booking.table_number}</td>
+                    <td>${booking.guests_count}</td>
+                    <td>${booking.booking_date}</td>
+                    <td>${booking.booking_time}</td>
+                    <td>${booking.customer}</td>
+                    <td>
+                      <a href="/booking/update/${booking.id}/" class="btn btn-warning btn-sm">Изменить</a>
+                      <a href="/booking/delete/${booking.id}/" class="btn btn-danger btn-sm">Удалить</a>
+                    </td>
+                `;
+                  tbody.appendChild(row);
+                });
+              });
+    });
+  </script>
 </div>
 {% endblock %}
+
+
