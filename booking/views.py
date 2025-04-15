@@ -99,3 +99,7 @@ def booking_delete(request, pk):
         booking.delete()
         return redirect('booking_list')
     return render(request, 'booking/booking_confirm_delete.html', {'booking': booking})
+
+
+def no_permission_view(request):
+    return render(request, 'booking/no-permission.html')

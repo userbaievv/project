@@ -124,5 +124,6 @@ LOGIN_REDIRECT_URL = '/booking/bookings/'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'EXCEPTION_HANDLER': 'booking.utils.custom_exception_handler',
 }

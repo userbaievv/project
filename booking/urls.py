@@ -10,4 +10,5 @@ urlpatterns = [
     path('bookings/new/', views.booking_create, name='booking_create'),
     path('bookings/<int:pk>/edit/', views.booking_update, name='booking_update'),
     path('bookings/<int:pk>/delete/', views.booking_delete, name='booking_delete'),
+    path('no-permission/', views.no_permission_view, name='no_permission'),
 ]
