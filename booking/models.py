@@ -48,13 +48,13 @@ from django.conf import settings
 
 class BookingTable(models.Model):
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    table_number = models.IntegerField()
+    table = models.ForeignKey(Table, on_delete=models.CASCADE)
     guests_count = models.PositiveIntegerField()
     booking_date = models.DateField()
     booking_time = models.TimeField()
 
     def __str__(self):
-        return f"Столик {self.table_number} - {self.customer.username}"
+        return f"Столик {self.table} - {self.customer.username}"
 
 
 class PhoneVerification(models.Model):

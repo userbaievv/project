@@ -39,7 +39,7 @@
     <tbody>
       {% for booking in bookings %}
       <tr>
-        <td>{{ booking.table_number }}</td>
+        <td>{{ booking.table }}</td>
         <td>{{ booking.guests_count }}</td>
         <td>{{ booking.booking_date }}</td>
         <td>{{ booking.booking_time }}</td>
@@ -69,7 +69,7 @@
                 data.forEach(booking => {
                   const row = document.createElement("tr");
                   row.innerHTML = `
-                    <td>${booking.table_number}</td>
+                    <td>${booking.table}</td>
                     <td>${booking.guests_count}</td>
                     <td>${booking.booking_date}</td>
                     <td>${booking.booking_time}</td>

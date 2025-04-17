@@ -6,6 +6,7 @@ from .models import BookingTable, RegisteredUser, PhoneVerification
 from .forms import RegistrationForm ,CustomUserCreationForm, BookingForm, BookingFilterForm
 from django.http import JsonResponse
 from .utils import send_sms
+from django.utils.timezone import now
 
 def home(request):
     return render(request, 'booking/home.html')
@@ -74,12 +75,40 @@ def booking_list(request):
 @login_required
 def booking_create(request):
     form = BookingForm(request.POST or None)
+
+    today = now().date()
+    today_bookings = BookingTable.objects.filter(booking_date=today)
+
+    tables_status = {}
+    for i in range(1, 11):
+        tables_status[f'table{i}'] = {
+            'booked': today_bookings.filter(table=i).exists()
+        }
+
     if form.is_valid():
-        booking = form.save(commit=False)
-        booking.customer = request.user
-        booking.save()
-        return redirect('booking_list')
-    return render(request, 'booking/booking_form.html', {'form': form})
+        booking_date = form.cleaned_data['booking_date']
+        booking_time = form.cleaned_data['booking_time']
+        table = form.cleaned_data['table']
+
+        exists = BookingTable.objects.filter(
+            table=table,
+            booking_date=booking_date,
+            booking_time=booking_time
+        ).exists()
+
+        if exists:
+            form.add_error('table', 'Этот стол уже забронирован на выбранное время')
+        else:
+            booking = form.save(commit=False)
+            booking.customer = request.user
+            booking.save()
+            return redirect('booking_list')
+
+    return render(request, 'booking/booking_form.html', {
+        'form': form,
+        **tables_status,
+    })
+
 
 @login_required
 def booking_update(request, pk):

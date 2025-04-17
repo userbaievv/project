@@ -1,12 +1,319 @@
 {% extends 'booking/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Редактировать{% else %}Создать{% endif %} бронирование{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-  <h2>{% if form.instance.pk %}Редактировать{% else %}Создать{% endif %} бронирование</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Сохранить</button>
-    <a href="{% url 'booking_list' %}" class="btn btn-secondary">Назад</a>
-  </form>
+<h2 class="mb-4 text-center">{% if form.instance.pk %}Редактировать{% else %}Создать{% endif %} бронирование</h2>
+
+<div class="row">
+  <div class="col-lg-4 col-md-5">
+    <div class="card shadow">
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.errors %}
+                <div class="text-danger small">{{ field.errors }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a href="{% url 'booking_list' %}" class="btn btn-secondary">Назад</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Карта столов -->
+  <div class="col-lg-8 col-md-7 mt-4 mt-md-0">
+    <div class="card shadow h-100">
+      <div class="card-body">
+        <h5 class="card-title text-center mb-4">Карта столов</h5>
+
+        <div class="d-flex justify-content-end mb-3">
+          <div class="btn-group" role="group">
+            <button class="btn btn-outline-primary btn-sm" onclick="showFloor(1)">Этаж 1</button>
+            <button class="btn btn-outline-primary btn-sm" onclick="showFloor(2)">Этаж 2</button>
+          </div>
+        </div>
+
+        <!-- Этаж 1 -->
+        <div id="floor-1" class="table-map">
+          <!-- Стол 1 -->
+          <div class="table-container {% if table1.booked %}booked{% endif %}" style="top: 40px; left: 60px;">
+            <div class="table-circle"></div>
+            <div class="chair chair-0"></div>
+            <div class="chair chair-60"></div>
+            <div class="chair chair-120"></div>
+            <div class="chair chair-180"></div>
+            <div class="chair chair-240"></div>
+            <div class="chair chair-300"></div>
+            <div class="table-info">
+              <strong>Номер стола:</strong> 1<br>
+              <strong>Кол-во мест:</strong> 6<br>
+              <strong>Статус:</strong> {% if table1.booked %}Занят{% else %}Свободен{% endif %}
+            </div>
+          </div>
+
+          <!-- Стол 2 -->
+          <div class="table-container {% if table2.booked %}booked{% endif %}" style="top: 160px; left: 320px;">
+            <div class="table-circle"></div>
+            <div class="chair chair-0"></div>
+            <div class="chair chair-60"></div>
+            <div class="chair chair-120"></div>
+            <div class="chair chair-180"></div>
+            <div class="chair chair-240"></div>
+            <div class="chair chair-300"></div>
+            <div class="table-info">
+              <strong>Номер стола:</strong> 2<br>
+              <strong>Кол-во мест:</strong> 6<br>
+              <strong>Статус:</strong> {% if table2.booked %}Занят{% else %}Свободен{% endif %}
+            </div>
+          </div>
+
+          <!-- Стол 3 -->
+          <div class="table-container {% if table3.booked %}booked{% endif %}" style="top: 350px; left: 150px;">
+            <div class="table-circle"></div>
+            <div class="chair chair-0"></div>
+            <div class="chair chair-60"></div>
+            <div class="chair chair-120"></div>
+            <div class="chair chair-180"></div>
+            <div class="chair chair-240"></div>
+            <div class="chair chair-300"></div>
+            <div class="table-info">
+              <strong>Номер стола:</strong> 3<br>
+              <strong>Кол-во мест:</strong> 6<br>
+              <strong>Статус:</strong> {% if table3.booked %}Занят{% else %}Свободен{% endif %}
+            </div>
+          </div>
+
+          <!-- Стол 4 -->
+          <div class="table-container {% if table4.booked %}booked{% endif %}" style="top: 310px; left: 520px;">
+            <div class="table-circle"></div>
+            <div class="chair chair-0"></div>
+            <div class="chair chair-60"></div>
+            <div class="chair chair-120"></div>
+            <div class="chair chair-180"></div>
+            <div class="chair chair-240"></div>
+            <div class="chair chair-300"></div>
+            <div class="table-info">
+              <strong>Номер стола:</strong> 4<br>
+              <strong>Кол-во мест:</strong> 6<br>
+              <strong>Статус:</strong> {% if table4.booked %}Занят{% else %}Свободен{% endif %}
+            </div>
+          </div>
+
+          <!-- Стол 5 -->
+          <div class="table-container {% if table5.booked %}booked{% endif %}" style="top: 80px; left: 600px;">
+            <div class="table-circle"></div>
+            <div class="chair chair-0"></div>
+            <div class="chair chair-60"></div>
+            <div class="chair chair-120"></div>
+            <div class="chair chair-180"></div>
+            <div class="chair chair-240"></div>
+            <div class="chair chair-300"></div>
+            <div class="table-info">
+              <strong>Номер стола:</strong> 5<br>
+              <strong>Кол-во мест:</strong> 6<br>
+              <strong>Статус:</strong> {% if table5.booked %}Занят{% else %}Свободен{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Этаж 2 -->
+        <div id="floor-2" class="table-map d-none">
+          <!-- Стол 6 -->
+          <div class="table-container {% if table6.booked %}booked{% endif %}" style="top: 50px; left: 100px;">
+            <div class="table-circle"></div>
+            <div class="chair chair-0"></div>
+            <div class="chair chair-60"></div>
+            <div class="chair chair-120"></div>
+            <div class="chair chair-180"></div>
+            <div class="chair chair-240"></div>
+            <div class="chair chair-300"></div>
+            <div class="table-info">
+              <strong>Номер стола:</strong> 6<br>
+              <strong>Кол-во мест:</strong> 6<br>
+              <strong>Статус:</strong> {% if table6.booked %}Занят{% else %}Свободен{% endif %}
+            </div>
+          </div>
+
+          <!-- Стол 7 -->
+          <div class="table-container {% if table7.booked %}booked{% endif %}" style="top: 140px; left: 350px;">
+            <div class="table-circle"></div>
+            <div class="chair chair-0"></div>
+            <div class="chair chair-60"></div>
+            <div class="chair chair-120"></div>
+            <div class="chair chair-180"></div>
+            <div class="chair chair-240"></div>
+            <div class="chair chair-300"></div>
+            <div class="table-info">
+              <strong>Номер стола:</strong> 7<br>
+              <strong>Кол-во мест:</strong> 6<br>
+              <strong>Статус:</strong> {% if table7.booked %}Занят{% else %}Свободен{% endif %}
+            </div>
+          </div>
+
+          <!-- Стол 8 -->
+          <div class="table-container {% if table8.booked %}booked{% endif %}" style="top: 60px; left: 600px;">
+            <div class="table-circle"></div>
+            <div class="chair chair-0"></div>
+            <div class="chair chair-60"></div>
+            <div class="chair chair-120"></div>
+            <div class="chair chair-180"></div>
+            <div class="chair chair-240"></div>
+            <div class="chair chair-300"></div>
+            <div class="table-info">
+              <strong>Номер стола:</strong> 8<br>
+              <strong>Кол-во мест:</strong> 6<br>
+              <strong>Статус:</strong> {% if table8.booked %}Занят{% else %}Свободен{% endif %}
+            </div>
+          </div>
+
+          <!-- Стол 9 -->
+          <div class="table-container {% if table9.booked %}booked{% endif %}" style="top: 280px; left: 130px;">
+            <div class="table-circle"></div>
+            <div class="chair chair-0"></div>
+            <div class="chair chair-60"></div>
+            <div class="chair chair-120"></div>
+            <div class="chair chair-180"></div>
+            <div class="chair chair-240"></div>
+            <div class="chair chair-300"></div>
+            <div class="table-info">
+              <strong>Номер стола:</strong> 9<br>
+              <strong>Кол-во мест:</strong> 6<br>
+              <strong>Статус:</strong> {% if table9.booked %}Занят{% else %}Свободен{% endif %}
+            </div>
+          </div>
+
+          <!-- Стол 10 -->
+          <div class="table-container {% if table10.booked %}booked{% endif %}" style="top: 280px; left: 640px;">
+            <div class="table-circle"></div>
+            <div class="chair chair-0"></div>
+            <div class="chair chair-60"></div>
+            <div class="chair chair-120"></div>
+            <div class="chair chair-180"></div>
+            <div class="chair chair-240"></div>
+            <div class="chair chair-300"></div>
+            <div class="table-info">
+              <strong>Номер стола:</strong> 10<br>
+              <strong>Кол-во мест:</strong> 6<br>
+              <strong>Статус:</strong> {% if table10.booked %}Занят{% else %}Свободен{% endif %}
+            </div>
+          </div>
+
+          <!-- Стол 11 -->
+          <div class="table-container {% if table11.booked %}booked{% endif %}" style="top: 380px; left: 350px;">
+            <div class="table-circle"></div>
+            <div class="chair chair-0"></div>
+            <div class="chair chair-60"></div>
+            <div class="chair chair-120"></div>
+            <div class="chair chair-180"></div>
+            <div class="chair chair-240"></div>
+            <div class="chair chair-300"></div>
+            <div class="table-info">
+              <strong>Номер стола:</strong> 11<br>
+              <strong>Кол-во мест:</strong> 6<br>
+              <strong>Статус:</strong> {% if table11.booked %}Занят{% else %}Свободен{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<style>
+.table-map {
+  position: relative;
+  height: 500px;
+  background: linear-gradient(135deg, #f5f7fa, #e4e8ec);
+  border: 2px dashed #ced4da;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table-container {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.table-container:hover {
+  transform: scale(1.1);
+  z-index: 20;
+}
+
+.table-container:hover .table-circle,
+.table-container:hover .chair {
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.6);
+  border: 2px solid rgba(0, 123, 255, 0.5);
+}
+
+.table-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, #6c757d, #495057);
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+/* Занятый стол */
+.table-container.booked .table-circle {
+  background: radial-gradient(circle at center, #dc3545, #b02a37);
+  border: 3px solid #dc3545;
+}
+
+.chair {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #adb5bd;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.chair-0   { transform: rotate(0deg)   translateY(-60px) rotate(0deg);    top: 40px; left: 40px; }
+.chair-60  { transform: rotate(60deg)  translateY(-60px) rotate(-60deg);  top: 40px; left: 40px; }
+.chair-120 { transform: rotate(120deg) translateY(-60px) rotate(-120deg); top: 40px; left: 40px; }
+.chair-180 { transform: rotate(180deg) translateY(-60px) rotate(-180deg); top: 40px; left: 40px; }
+.chair-240 { transform: rotate(240deg) translateY(-60px) rotate(-240deg); top: 40px; left: 40px; }
+.chair-300 { transform: rotate(300deg) translateY(-60px) rotate(-300deg); top: 40px; left: 40px; }
+
+/* Всплывающая панель */
+.table-info {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 110px;
+  width: 140px;
+  padding: 8px;
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  font-size: 13px;
+  z-index: 30;
+}
+
+.table-container:hover .table-info {
+  display: block;
+}
+</style>
+
+<script>
+function showFloor(floor) {
+  document.getElementById('floor-1').classList.add('d-none');
+  document.getElementById('floor-2').classList.add('d-none');
+  document.getElementById(`floor-${floor}`).classList.remove('d-none');
+}
+</script>
 {% endblock %}

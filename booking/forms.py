@@ -28,7 +28,7 @@ class RegistrationForm(forms.ModelForm):
 class BookingForm(forms.ModelForm):
     class Meta:
         model = BookingTable
-        fields = ['table_number', 'guests_count', 'booking_date', 'booking_time']
+        fields = ['table', 'guests_count', 'booking_date', 'booking_time']
         widgets = {
             'booking_date': forms.DateInput(attrs={'type': 'date'}),
             'booking_time': forms.TimeInput(attrs={'type': 'time'}),
@@ -42,7 +42,7 @@ class BookingFilterForm(forms.Form):
         choices=[
             ('booking_date', 'Дата'),
             ('booking_time', 'Время'),
-            ('table_number', 'Номер стола'),
+            ('table', 'Номер стола'),
         ],
         label='Сортировать по'
     )
