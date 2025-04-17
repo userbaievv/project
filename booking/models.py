@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
+from datetime import timedelta
+import random
 
 class Restaurant(models.Model):
     name = models.CharField(max_length=100)
@@ -52,3 +55,16 @@ class BookingTable(models.Model):
 
     def __str__(self):
         return f"Столик {self.table_number} - {self.customer.username}"
+
+
+class PhoneVerification(models.Model):
+    phone_number = models.CharField(max_length=15)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(minutes=5)
+
+    @staticmethod
+    def generate_code():
+        return str(random.randint(100000, 999999))

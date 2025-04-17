@@ -103,3 +103,51 @@ def booking_delete(request, pk):
 
 def no_permission_view(request):
     return render(request, 'booking/no-permission.html')
+
+from .models import PhoneVerification
+from .utils import send_sms
+from django.contrib.auth.models import User  # или твоя кастомная модель
+
+def register_phone_view(request):
+    if request.method == "POST":
+        phone = request.POST.get("phone")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+        if password != confirm_password:
+            return render(request, "booking/register_phone.html", {"error": "Пароли не совпадают"})
+
+        request.session["reg_phone"] = phone
+        request.session["reg_username"] = username
+        request.session["reg_password"] = password
+
+        code = PhoneVerification.generate_code()
+        PhoneVerification.objects.create(phone_number=phone, code=code)
+        send_sms(phone, code)
+        return redirect("verify_sms")
+
+    return render(request, "booking/register_phone.html")
+
+
+def verify_sms_view(request):
+    phone = request.session.get("reg_phone")
+    if not phone:
+        return redirect("register_phone")
+
+    if request.method == "POST":
+        code_input = request.POST.get("code")
+        try:
+            verification = PhoneVerification.objects.filter(phone_number=phone, code=code_input).latest("created_at")
+            if verification.is_expired():
+                return render(request, "booking/verify_sms.html", {"phone": phone, "error": "Код истёк"})
+
+            # Создание пользователя
+            username = request.session.get("reg_username")
+            password = request.session.get("reg_password")
+            user = User.objects.create_user(username=username, password=password)
+            login(request, user)
+            return redirect("home")
+        except PhoneVerification.DoesNotExist:
+            return render(request, "booking/verify_sms.html", {"phone": phone, "error": "Неверный код"})
+
+    return render(request, "booking/verify_sms.html", {"phone": phone})

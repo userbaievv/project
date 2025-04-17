@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import register_phone_view, verify_sms_view
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -11,4 +12,6 @@ urlpatterns = [
     path('bookings/<int:pk>/edit/', views.booking_update, name='booking_update'),
     path('bookings/<int:pk>/delete/', views.booking_delete, name='booking_delete'),
     path('no-permission/', views.no_permission_view, name='no_permission'),
+    path('register-phone/', register_phone_view, name='register_phone'),
+    path('verify-sms/', verify_sms_view, name='verify_sms'),
 ]
