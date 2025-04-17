@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from .models import BookingTable, RegisteredUser
+from .models import BookingTable, RegisteredUser, PhoneVerification
 from .forms import RegistrationForm ,CustomUserCreationForm, BookingForm, BookingFilterForm
-from django.shortcuts import render, redirect
-from .forms import RegistrationForm
+from django.http import JsonResponse
+from .utils import send_sms
 
 def home(request):
     return render(request, 'booking/home.html')
@@ -141,7 +141,6 @@ def verify_sms_view(request):
             if verification.is_expired():
                 return render(request, "booking/verify_sms.html", {"phone": phone, "error": "Код истёк"})
 
-            # Создание пользователя
             username = request.session.get("reg_username")
             password = request.session.get("reg_password")
             user = User.objects.create_user(username=username, password=password)
@@ -151,3 +150,14 @@ def verify_sms_view(request):
             return render(request, "booking/verify_sms.html", {"phone": phone, "error": "Неверный код"})
 
     return render(request, "booking/verify_sms.html", {"phone": phone})
+
+def resend_code_view(request):
+    phone = request.session.get("reg_phone")
+    if not phone:
+        return JsonResponse({"error": "Телефон не найден в сессии"}, status=400)
+
+    code = PhoneVerification.generate_code()
+    PhoneVerification.objects.create(phone_number=phone, code=code)
+    send_sms(phone, code)
+
+    return JsonResponse({"message": "Код отправлен заново"})

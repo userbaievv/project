@@ -57,6 +57,14 @@
 
             <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
         </form>
+
+        <hr class="my-4">
+
+        <div class="text-center">
+            <a href="{% url 'register_phone' %}" class="btn btn-outline-secondary w-100">
+                📱 Регистрация через номер телефона
+            </a>
+        </div>
     </div>
 </div>
 {% else %}
@@ -93,8 +101,4 @@
         });
     });
 </script>
-<a href="{% url 'register_phone' %}">
-    <button>Регистрация через телефон</button>
-</a>
-
 {% endblock %}

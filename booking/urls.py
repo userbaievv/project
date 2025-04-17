@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import register_phone_view, verify_sms_view
+from .views import register_phone_view, verify_sms_view, resend_code_view
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -14,4 +14,5 @@ urlpatterns = [
     path('no-permission/', views.no_permission_view, name='no_permission'),
     path('register-phone/', register_phone_view, name='register_phone'),
     path('verify-sms/', verify_sms_view, name='verify_sms'),
+    path("resend-code/", resend_code_view, name="resend_code"),
 ]

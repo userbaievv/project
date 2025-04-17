@@ -3,15 +3,38 @@
 {% block title %}Вход{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <h2 class="text-center mb-4">Вход</h2>
-  <form method="post" class="w-50 mx-auto">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Войти</button>
-  </form>
-  <p class="text-center mt-3">
-    Нет аккаунта? <a href="{% url 'register' %}">Зарегистрируйтесь</a>
-  </p>
+<div class="text-center">
+  <h2 class="mb-4">Добро пожаловать в "Гурман"!</h2>
+  <p class="lead">Пожалуйста, войдите в свой аккаунт.</p>
+</div>
+
+<div class="card mx-auto mt-4" style="max-width: 400px;">
+  <div class="card-body">
+    <h4 class="card-title text-center">Вход</h4>
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label">Имя пользователя</label>
+        <input type="text" name="username" class="form-control" required placeholder="Введите имя пользователя">
+        <small class="form-text text-muted">Только буквы, цифры и @/./+/-/_</small>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Пароль</label>
+        <input type="password" name="password" class="form-control" required placeholder="Введите пароль">
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Войти</button>
+    </form>
+
+    <hr class="my-4">
+    <div class="text-center">
+      <p class="mb-0">Нет аккаунта?</p>
+      <a href="{% url 'register' %}" class="btn btn-outline-secondary w-100 mt-2">
+        ✍️ Зарегистрироваться
+      </a>
+    </div>
+  </div>
 </div>
 {% endblock %}
