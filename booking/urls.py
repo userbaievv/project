@@ -3,7 +3,7 @@ from . import views
 from .views import register_phone_view, verify_sms_view, resend_code_view
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', views.test_home, name='home'),
     path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
@@ -15,4 +15,6 @@ urlpatterns = [
     path('register-phone/', register_phone_view, name='register_phone'),
     path('verify-sms/', verify_sms_view, name='verify_sms'),
     path("resend-code/", resend_code_view, name="resend_code"),
+    path('reg/',views.home, name='reg'),
+    path('contacts/',views.contacts,name='contacts')
 ]

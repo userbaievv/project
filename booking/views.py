@@ -8,6 +8,9 @@ from django.http import JsonResponse
 from .utils import send_sms
 from django.utils.timezone import now
 from django.contrib.auth import get_user_model
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 
 def home(request):
@@ -189,6 +192,7 @@ def register_phone_view(request):
 
 def verify_sms_view(request):
     phone = request.session.get("reg_phone")
+    mobizon_api = os.getenv('mobizon_api')
     if not phone:
         return redirect("register_phone")
 
@@ -217,6 +221,7 @@ def verify_sms_view(request):
 
 def resend_code_view(request):
     phone = request.session.get("reg_phone")
+    mobizon_api = os.getenv('mobizon_api')
     if not phone:
         return JsonResponse({"error": "Телефон не найден в сессии"}, status=400)
 
@@ -225,3 +230,12 @@ def resend_code_view(request):
     send_sms(phone, code)
 
     return JsonResponse({"message": "Код отправлен заново"})
+
+from django.shortcuts import render
+
+def test_home(request):
+    return render(request, 'homehome.html')
+
+def contacts(request):
+    google_maps_api = os.getenv('google_maps_api')
+    return render(request, 'contacts.html',{'google_maps_api': google_maps_api})

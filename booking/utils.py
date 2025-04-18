@@ -16,7 +16,7 @@ def custom_exception_handler(exc, context):
 
 
 def send_sms(phone, code):
-    api_key = ''
+    api_key = '{{mobizon_api}}'
     phone = phone.lstrip('+')
     text = f'Ваш код подтверждения: {code}. DjangoProject (проект студента университета IITU)'
 

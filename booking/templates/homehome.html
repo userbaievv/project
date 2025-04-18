@@ -1,0 +1,122 @@
+{% extends 'booking/base.html' %}
+
+{% block content %}
+
+
+<section class="text-white text-center d-flex align-items-center" style="
+    height: 100vh;
+    background-image: url('https://artum.studio/Images/e93fb1552b00242d70ad153b9b2d2da2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-blend-mode: darken;
+    background-color: rgba(0, 0, 0, 0.85);
+">
+    <div class="container">
+        <p class="lead text-uppercase mb-4" style="letter-spacing: 2px;">Добро пожаловать в мир вкуса</p>
+        <h1 class="display-3 fw-bold mb-3">Бронирование столика</h1>
+        <h2 class="mb-3">из кафе-ресторана <strong>Гурман</strong></h2>
+        <p class="lead mb-5">Атмосферно. Вкусно. Оригинально.</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="/bookings/" class="btn btn-primary btn-lg px-5">Забронировать</a>
+            <a href="/reg/" class="btn btn-outline-light btn-lg px-5">Зарегистрироваться</a>
+        </div>
+    </div>
+</section>
+
+
+<section class="py-5 bg-light" id="aboutUsSection">
+    <div class="container">
+        <h2 class="text-center mb-5" style="font-size: 3rem;">О нас</h2>
+        <div class="row">
+            <div class="col-lg-6">
+                <img src="http://f0635336.xsph.ru/web/img/interior.jpg" class="img-fluid" alt="О нас">
+            </div>
+            <div class="col-lg-6">
+                <p style="font-size: 1.2rem;">Наш ресторан "Гурман" — это место, где каждый может насладиться не только изысканными блюдами, но и уютной атмосферой. Мы предлагаем вам уникальное сочетание вкуса и стиля, внимание к деталям и профессиональное обслуживание. Приходите к нам, чтобы насладиться настоящими гастрономическими удовольствиями и провести незабываемое время!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-dark text-white" style="transition: background-color 0.5s ease;" >
+    <div class="container" id="advantagesContent" style="opacity: 0; transition: opacity 1s ease;">
+        <h2 class="text-center mb-5" style="font-size: 3rem; transition: color 0.5s ease;">Преимущества</h2>
+        <div class="row">
+            <div class="col-md-4" style="transition: transform 0.5s ease;">
+                <h4>Уютная атмосфера</h4>
+                <p>Каждое место в нашем ресторане создаёт атмосферу уюта и комфорта для гостей.</p>
+            </div>
+            <div class="col-md-4" style="transition: transform 0.5s ease;">
+                <h4>Изысканные блюда</h4>
+                <p>Наши шеф-повара готовят для вас лучшие блюда с ингредиентами высшего качества.</p>
+            </div>
+            <div class="col-md-4" style="transition: transform 0.5s ease;">
+                <h4>Отличное обслуживание</h4>
+                <p>Каждый гость для нас важен, и мы всегда стремимся предоставить лучший сервис.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light" id="interiorSection">
+    <div class="container">
+        <h2 class="text-center mb-4">Интерьер</h2>
+        <div id="carouselInterior" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="https://artum.studio/Images/e93fb1552b00242d70ad153b9b2d2da2.jpg" class="d-block w-100" alt="Интерьер 1">
+                </div>
+                <div class="carousel-item">
+                    <img src="https://mika-design.ru/wp-content/uploads/interer-italyanskogo-restorana.jpg?x96008" class="d-block w-100" alt="Интерьер 2">
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselInterior" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselInterior" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+        <div class="text-center mt-3">
+            <h5 id="floorText">1 этаж</h5>
+        </div>
+    </div>
+</section>
+
+<script>
+    const carousel = document.getElementById('carouselInterior');
+    const floorText = document.getElementById('floorText');
+
+    carousel.addEventListener('slid.bs.carousel', function() {
+        const activeItem = document.querySelector('.carousel-item.active');
+        const index = Array.from(carousel.querySelectorAll('.carousel-item')).indexOf(activeItem);
+
+        if (index === 0) {
+            floorText.textContent = '1 этаж';
+        } else if (index === 1) {
+            floorText.textContent = '2 этаж';
+        }
+    });
+
+    setTimeout(function() {
+        document.getElementById('advantagesContent').style.opacity = 1;
+    }, 2000);
+
+</script>
+
+<style>
+    #aboutUsSection {
+        padding-top: 200px !important;
+        padding-bottom: 200px !important;
+    }
+
+    #interiorSection {
+    padding-top: 200px !important;
+    padding-bottom: 200px !important;
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "booking/base.html" %}
+
+{% block content %}
+    <h1 class="text-center mb-4">Контакты</h1>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h4>Адрес:</h4>
+                <p>г. Алматы, Улица Курмангазы 79</p>
+                
+                <h4>Позвонить/забронировать столик:</h4>
+                <p>8 (777) 777 77 77</p>
+                
+                <h4>Эл. адрес:</h4>
+                <p>40387@iitu.edu.kz, 40256@iitu.edu.kz</p>
+
+                <h4>Режим работы:</h4>
+                <p>Пн-Пт: с 11:00 до 23:00</p>
+                <p>Сб-Вс: с 12:00 до 22:00</p>
+            </div>
+
+            <div class="col-md-6">
+                <h4>Найдите нас на карте:</h4>
+                <div style="width: 100%; height: 400px;">
+                    <!-- Вставка карты Google -->
+                    <iframe src="https://www.google.com/maps/embed/v1/place?q=Курмангазы+79,+Алматы&key={{google_maps_api}}"
+                            width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
