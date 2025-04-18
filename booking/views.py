@@ -7,6 +7,8 @@ from .forms import RegistrationForm ,CustomUserCreationForm, BookingForm, Bookin
 from django.http import JsonResponse
 from .utils import send_sms
 from django.utils.timezone import now
+from django.contrib.auth import get_user_model
+
 
 def home(request):
     return render(request, 'booking/home.html')
@@ -172,9 +174,13 @@ def verify_sms_view(request):
 
             username = request.session.get("reg_username")
             password = request.session.get("reg_password")
+
+            User = get_user_model()  # ← вот здесь выбирается кастомная модель
             user = User.objects.create_user(username=username, password=password)
+
             login(request, user)
-            return redirect("home")
+            return redirect("booking_list")  # ← редиректим сразу в список бронирований
+
         except PhoneVerification.DoesNotExist:
             return render(request, "booking/verify_sms.html", {"phone": phone, "error": "Неверный код"})
 
