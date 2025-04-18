@@ -64,7 +64,7 @@
               .then(response => response.json())
               .then(data => {
                 const tbody = document.querySelector("tbody");
-                tbody.innerHTML = ""; // очищаем старые строки
+                tbody.innerHTML = "";
 
                 data.forEach(booking => {
                   const row = document.createElement("tr");
@@ -75,8 +75,8 @@
                     <td>${booking.booking_time}</td>
                     <td>${booking.customer}</td>
                     <td>
-                      <a href="/booking/update/${booking.id}/" class="btn btn-warning btn-sm">Изменить</a>
-                      <a href="/booking/delete/${booking.id}/" class="btn btn-danger btn-sm">Удалить</a>
+                      <a href="/bookings/${booking.id}/edit/" class="btn btn-warning btn-sm">Изменить</a>
+                      <a href="/bookings/${booking.id}/delete/" class="btn btn-danger btn-sm">Удалить</a>
                     </td>
                 `;
                   tbody.appendChild(row);

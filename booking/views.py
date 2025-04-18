@@ -80,12 +80,15 @@ def booking_create(request):
 
     today = now().date()
     today_bookings = BookingTable.objects.filter(booking_date=today)
+    booked_tables = today_bookings.values_list('table', flat=True)
 
-    tables_status = {}
-    for i in range(1, 11):
-        tables_status[f'table{i}'] = {
-            'booked': today_bookings.filter(table=i).exists()
-        }
+    all_tables = []
+    for i in range(1, 12):
+        all_tables.append({
+            'id': i,
+            'booked': i in booked_tables,
+            'editing': False
+        })
 
     if form.is_valid():
         booking_date = form.cleaned_data['booking_date']
@@ -108,20 +111,44 @@ def booking_create(request):
 
     return render(request, 'booking/booking_form.html', {
         'form': form,
-        **tables_status,
+        'tables': all_tables,
+        'editing_table_id': None,
+        'chair_angles': [0, 60, 120, 180, 240, 300],
     })
+
 
 
 @login_required
 def booking_update(request, pk):
     booking = get_object_or_404(BookingTable, pk=pk)
-    if booking.customer != request.user:
+    if booking.customer != request.user and not request.user.is_superuser:
         return redirect('booking_list')
+
     form = BookingForm(request.POST or None, instance=booking)
+
+    today = now().date()
+    today_bookings = BookingTable.objects.filter(booking_date=today)
+    chair_angles = [0, 60, 120, 180, 240, 300]
+    booked_tables = today_bookings.values_list('table', flat=True)
+
+    all_tables = []
+    for i in range(1, 12):
+        all_tables.append({
+            'id': i,
+            'booked': i in booked_tables and i != booking.table.id,
+            'editing': booking.table.id == i
+        })
+
     if form.is_valid():
         form.save()
         return redirect('booking_list')
-    return render(request, 'booking/booking_form.html', {'form': form})
+
+    return render(request, 'booking/booking_form.html', {
+        'form': form,
+        'tables': all_tables,
+        'editing_table_id': booking.table,
+        'chair_angles': [0, 60, 120, 180, 240, 300],
+    })
 
 @login_required
 def booking_delete(request, pk):
