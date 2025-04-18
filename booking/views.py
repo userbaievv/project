@@ -137,7 +137,7 @@ def no_permission_view(request):
 
 from .models import PhoneVerification
 from .utils import send_sms
-from django.contrib.auth.models import User  # или твоя кастомная модель
+from django.contrib.auth.models import User
 
 def register_phone_view(request):
     if request.method == "POST":
@@ -175,12 +175,14 @@ def verify_sms_view(request):
             username = request.session.get("reg_username")
             password = request.session.get("reg_password")
 
-            User = get_user_model()  # ← вот здесь выбирается кастомная модель
+            User = get_user_model()
             user = User.objects.create_user(username=username, password=password)
 
-            login(request, user)
-            return redirect("booking_list")  # ← редиректим сразу в список бронирований
+            user.phone_number = phone
+            user.save()
 
+            login(request, user)
+            return redirect("home")
         except PhoneVerification.DoesNotExist:
             return render(request, "booking/verify_sms.html", {"phone": phone, "error": "Неверный код"})
 
