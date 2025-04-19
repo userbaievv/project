@@ -11,6 +11,7 @@ from django.contrib.auth import get_user_model
 import os
 from dotenv import load_dotenv
 load_dotenv()
+from django.db import connection
 
 
 def home(request):

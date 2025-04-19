@@ -7,3 +7,9 @@ class BookingTableViewSet(viewsets.ModelViewSet):
     queryset = BookingTable.objects.all()
     serializer_class = BookingTableSerializer
     permission_classes = [IsAdminUser]
+
+def get_queryset(self):
+    user = self.request.user
+    if user.is_superuser:
+        return BookingTable.objects.select_related('customer').all()
+    return BookingTable.objects.select_related('customer').filter(customer=user)
