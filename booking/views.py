@@ -14,6 +14,14 @@ load_dotenv()
 from django.db import connection
 
 
+
+import g4f
+import json
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
+import re
+
+
 def home(request):
     return render(request, 'booking/home.html')
 
@@ -240,3 +248,84 @@ def test_home(request):
 def contacts(request):
     google_maps_api = os.getenv('google_maps_api')
     return render(request, 'contacts.html',{'google_maps_api': google_maps_api})
+
+
+
+@csrf_exempt
+def chat_support(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        question = data.get('question', '')
+        history = data.get('history', [])
+
+        booking_date = None
+        booking_time = None
+        table_number = None
+
+        date_match = re.search(r"(\d{1,2})\s*(января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря|\d{4})", question)
+        if date_match:
+            day = date_match.group(1)
+            month_str = date_match.group(2)
+            months = {
+                "января": "01", "февраля": "02", "марта": "03", "апреля": "04", "мая": "05",
+                "июня": "06", "июля": "07", "августа": "08", "сентября": "09", "октября": "10",
+                "ноября": "11", "декабря": "12"
+            }
+            month = months.get(month_str, None)
+            if month:
+                booking_date = f"2025-{month}-{day.zfill(2)}"
+
+        if "все брони" in question:
+            if booking_date:
+                bookings = BookingTable.objects.filter(booking_date=booking_date)
+                if bookings.exists():
+                    response = f"На {booking_date} забронированы следующие столы: "
+                    response += ", ".join([f"Стол {booking.table}, {booking.booking_time}" for booking in bookings])
+                else:
+                    response = f"На {booking_date} нет забронированных столов."
+
+        elif "свободен ли стол" in question and booking_date:
+            table_match = re.search(r"стол (\d+)", question)
+            if table_match:
+                table_number = int(table_match.group(1))
+
+            time_match = re.search(r"(\d{1,2}:\d{2})", question)
+            if time_match:
+                booking_time = time_match.group(1)
+
+            if table_number and booking_date and booking_time:
+                booked_table = BookingTable.objects.filter(
+                    Q(booking_date=booking_date) &
+                    Q(booking_time=booking_time) &
+                    Q(table=table_number)
+                )
+
+                if booked_table.exists():
+                    response = f"Стол {table_number} занят на {booking_date} в {booking_time}."
+                else:
+                    response = f"Стол {table_number} свободен на {booking_date} в {booking_time}."
+            elif table_number and booking_date:
+                available_tables = BookingTable.objects.filter(
+                    Q(booking_date=booking_date) &
+                    Q(table=table_number)
+                )
+
+                if available_tables.exists():
+                    response = f"Стол {table_number} занят на {booking_date}."
+                else:
+                    response = f"Стол {table_number} свободен на {booking_date}."
+
+        else:
+            try:
+                response = g4f.ChatCompletion.create(
+                    model="gpt-4o",
+                    messages=[
+                        {"role": "system", "content": "Ты помощник сайта ресторана 'Гурман'. Отвечай на вопросы о бронировании, часах работы, адресе, контактной информации и меню. Если спрашивают контакты Тел: 8 (777) 777 7777 Эл. адрес: 40387@iitu.edu.kz, 40256@iitu.edu.kz. Режим работы: Пн-Пт: с 11:00 до 23:00 Сб-Вс: с 12:00 до 22:00  Адрес: г. Алматы, Улица Курмангазы 79"},
+                        *history,
+                        {"role": "user", "content": question}
+                    ]
+                )
+            except Exception as e:
+                response = "Извините, возникла ошибка. Попробуйте позже."
+
+        return JsonResponse({'response': response})

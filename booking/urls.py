@@ -16,5 +16,6 @@ urlpatterns = [
     path('verify-sms/', verify_sms_view, name='verify_sms'),
     path("resend-code/", resend_code_view, name="resend_code"),
     path('reg/',views.home, name='reg'),
-    path('contacts/',views.contacts,name='contacts')
+    path('contacts/',views.contacts,name='contacts'),
+    path('chat-support/', views.chat_support, name='chat_support'),
 ]
