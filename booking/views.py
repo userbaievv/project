@@ -1,20 +1,18 @@
 from django.shortcuts import render, redirect,get_object_or_404
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from .models import BookingTable, RegisteredUser, PhoneVerification
+from .models import BookingTable, RegisteredUser, PhoneVerification, Table
 from .forms import RegistrationForm ,CustomUserCreationForm, BookingForm, BookingFilterForm
 from django.http import JsonResponse
 from .utils import send_sms
 from django.utils.timezone import now
-from django.contrib.auth import get_user_model
 import os
 from dotenv import load_dotenv
 load_dotenv()
 from django.db import connection
-
-
-
+from .serializers import BookingTableSerializer
+from datetime import datetime, timedelta
 import g4f
 import json
 from django.views.decorators.csrf import csrf_exempt
@@ -249,8 +247,6 @@ def contacts(request):
     google_maps_api = os.getenv('google_maps_api')
     return render(request, 'contacts.html',{'google_maps_api': google_maps_api})
 
-
-
 @csrf_exempt
 @login_required
 def chat_support(request):
@@ -260,7 +256,6 @@ def chat_support(request):
         history = data.get('history', [])
         user = request.user
 
-        # Только брони этого пользователя
         bookings = BookingTable.objects.filter(customer=user).order_by('booking_date', 'booking_time')
         booking_info = [
             f"ID: {b.id} | Стол {b.table} — {b.booking_date} в {b.booking_time}"
@@ -276,15 +271,22 @@ def chat_support(request):
                         "role": "system",
                         "content": (
                             "Ты помощник ресторана 'Гурман'. Отвечай на вопросы о меню, часах работы, адресе и бронированиях.\n\n"
-                            "ВНИМАНИЕ: Никогда не удаляй бронь сразу. Если пользователь хочет удалить бронирование:\n"
-                            "1. Сначала уточни, на какую дату и стол он хочет удалить.\n"
-                            "2. Если есть несколько броней на такую дату — покажи все и спроси, какую выбрать.\n"
-                            "3. Когда бронь найдена — обязательно спроси подтверждение: 'Вы точно хотите удалить бронь стола {номер} на {дата} в {время}?' \n"
-                            "4. Только после подтверждения пользователя — ответь в формате: DEL:{ID} (ID — это внутренний ID брони).\n\n"
-                            "Пример ответа: DEL:12\n"
-                            "Не пиши ничего кроме команды удаления в этой строке. Всё остальное — обычные ответы.\n\n"
-                            "Вот список активных бронирований пользователя:\n"
-                            f"{booking_data}"
+                            "Если спрашивают контакты Тел: 8 (777) 777 7777 Эл. адрес: 40387@iitu.edu.kz, 40256@iitu.edu.kz.\n"
+                            "Если спрашивают Режим работы: Пн-Пт: с 11:00 до 23:00 Сб-Вс: с 12:00 до 22:00.\n"
+                            "Если спрашивают Адрес: г. Алматы, Улица Курмангазы 79. \n"
+                            "УДАЛЕНИЕ БРОНИ:\n"
+                            "Если пользователь хочет удалить бронь:\n"
+                            "1. Спроси, какую бронь (дату, время, стол).\n"
+                            "2. Покажи варианты, если есть несколько.\n"
+                            "3. Обязательно спроси подтверждение: 'Вы точно хотите удалить бронь стола {номер} на {дата} в {время}?' \n"
+                            "4. После подтверждения — ответь строго в формате: DEL:{ID}\n\n"
+                            "СОЗДАНИЕ БРОНИ:\n"
+                            "Если пользователь хочет создать бронь:\n"
+                            "1. Спроси, на какую дату, время и сколько гостей.\n"
+                            "2. Покажи доступные столы.\n"
+                            "3. После выбора и подтверждения пользователя — ответь строго в формате: CREATE:{table_id}:{guests}:{date}:{time}.\n"
+                            "Пример: CREATE:5:3:2025-04-25:19:00\n\n"
+                            f"Актуальные брони пользователя:\n{booking_data}"
                         )
                     },
                     *history,
@@ -299,11 +301,37 @@ def chat_support(request):
                     booking_id = int(bot_reply.replace("DEL:", "").strip())
                     booking = BookingTable.objects.get(id=booking_id, customer=user)
                     booking.delete()
-                    return JsonResponse({'response': f'✅ Бронирование удалено: Стол {booking.table} на {booking.booking_date} в {booking.booking_time}.'})
+                    return JsonResponse({'response': f'✅ Бронь удалена: Стол {booking.table} на {booking.booking_date} в {booking.booking_time}.'})
                 except BookingTable.DoesNotExist:
                     return JsonResponse({'response': f'❌ Бронь с ID {booking_id} не найдена или не принадлежит вам.'})
 
-        except Exception as e:
-            return JsonResponse({'response': 'Извините, произошла ошибка. Попробуйте позже.'})
+            elif bot_reply.startswith("CREATE:"):
+                try:
+                    parts = bot_reply.replace("CREATE:", "").split(":")
+                    table_id, guests, date, time = int(parts[0]), int(parts[1]), parts[2], parts[3]
+                    table = Table.objects.get(id=table_id)
 
-        return JsonResponse({'response': bot_reply})
+                    exists = BookingTable.objects.filter(
+                        table=table,
+                        booking_date=date,
+                        booking_time=time
+                    ).exists()
+
+                    if exists:
+                        return JsonResponse({'response': '❌ Этот столик уже занят на указанное время. Попробуйте другой.'})
+
+                    booking = BookingTable.objects.create(
+                        customer=user,
+                        table=table,
+                        guests_count=guests,
+                        booking_date=date,
+                        booking_time=time
+                    )
+                    return JsonResponse({'response': f'✅ Бронь создана: Стол {table} на {date} в {time} для {guests} гостей. (ID: {booking.id})'})
+                except Exception as e:
+                    return JsonResponse({'response': '❌ Ошибка при создании брони. Проверьте данные.'})
+
+            return JsonResponse({'response': bot_reply})
+
+        except Exception as e:
+            return JsonResponse({'response': '❌ Ошибка сервера. Попробуйте позже.'})
