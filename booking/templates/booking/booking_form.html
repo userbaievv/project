@@ -103,7 +103,7 @@
   background: linear-gradient(135deg, #f5f7fa, #e4e8ec);
   border: 2px dashed #ced4da;
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible;
 }
 .table-container {
   position: absolute;
@@ -167,7 +167,10 @@
 }
 .table-container:hover .table-info {
   display: block;
+  box-shadow: 0 0 12px rgba(0, 123, 255, 0.8);
+  border: 2px solid #007bff;
 }
+
 .chair.editing-chair {
   background: #ffc107;
   box-shadow: 0 0 10px rgba(255, 193, 7, 0.6);
