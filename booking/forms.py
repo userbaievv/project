@@ -1,9 +1,7 @@
-import self
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
-
-
 from .models import RegisteredUser, BookingTable, Table
+import self
 
 class CustomUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
