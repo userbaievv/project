@@ -86,11 +86,17 @@ def booking_list(request):
 
 @login_required
 def booking_create(request):
-    form = BookingForm(request.POST or None)
 
     today = now().date()
     today_bookings = BookingTable.objects.filter(booking_date=today)
     booked_tables = today_bookings.values_list('table', flat=True)
+
+    booked_table_numbers = set(
+        BookingTable.objects.filter(booking_date=today)
+        .select_related("table")
+        .values_list("table__number", flat=True)
+    )
+    form = BookingForm(request.POST or None, booked_table_numbers=booked_table_numbers)
 
     all_tables = []
     for i in range(1, 12):
