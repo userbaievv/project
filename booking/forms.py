@@ -1,7 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from .models import RegisteredUser, BookingTable, Table
-import self
+import pytz
+from datetime import datetime
 
 class CustomUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
@@ -31,13 +32,22 @@ class BookingForm(forms.ModelForm):
         model = BookingTable
         fields = ['table', 'guests_count', 'booking_date', 'booking_time']
         widgets = {
-            'booking_date': forms.DateInput(attrs={'type': 'date'}),
-            'booking_time': forms.TimeInput(attrs={'type': 'time'}),
+            'booking_date': forms.DateInput(attrs={
+                'type': 'date',
+                'min': datetime.now(pytz.timezone('Asia/Almaty')).date().isoformat(),
+                'id': 'id_booking_date'
+            }),
+            'booking_time': forms.TimeInput(attrs={
+                'type': 'time',
+                'id': 'id_booking_time'
+            }),
         }
+
     def __init__(self, *args, **kwargs):
         booked_table_numbers = kwargs.pop('booked_table_numbers', set())
         super().__init__(*args, **kwargs)
         self.fields['table'].queryset = Table.objects.exclude(number__in=booked_table_numbers)
+
 
 
 class BookingFilterForm(forms.Form):

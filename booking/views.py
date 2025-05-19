@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import login, logout, authenticate, get_user_model
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import BookingTable, RegisteredUser, PhoneVerification, Table
 from .forms import RegistrationForm ,CustomUserCreationForm, BookingForm, BookingFilterForm
@@ -12,13 +13,13 @@ from dotenv import load_dotenv
 load_dotenv()
 from django.db import connection
 from .serializers import BookingTableSerializer
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import g4f
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 import re
-
+import pytz
 
 def home(request):
     return render(request, 'booking/home.html')
@@ -49,7 +50,7 @@ def register_view(request):
         password2 = request.POST['password2']
 
         if password1 != password2 or len(password1) < 5:
-            return redirect('home')  # или показать ошибку
+            return redirect('home')
 
         user = RegisteredUser.objects.create_user(username=username, password=password1)
         login(request, user)
@@ -84,10 +85,13 @@ def booking_list(request):
         'filter_form': form,
     })
 
+
 @login_required
 def booking_create(request):
+    almaty_tz = pytz.timezone('Asia/Almaty')
+    almaty_now = datetime.now(almaty_tz)
+    today = almaty_now.date()
 
-    today = now().date()
     today_bookings = BookingTable.objects.filter(booking_date=today)
     booked_tables = today_bookings.values_list('table', flat=True)
 
@@ -96,6 +100,7 @@ def booking_create(request):
         .select_related("table")
         .values_list("table__number", flat=True)
     )
+
     form = BookingForm(request.POST or None, booked_table_numbers=booked_table_numbers)
 
     all_tables = []
@@ -111,19 +116,25 @@ def booking_create(request):
         booking_time = form.cleaned_data['booking_time']
         table = form.cleaned_data['table']
 
-        exists = BookingTable.objects.filter(
-            table=table,
-            booking_date=booking_date,
-            booking_time=booking_time
-        ).exists()
+        selected_datetime = datetime.combine(booking_date, booking_time)
+        selected_datetime = almaty_tz.localize(selected_datetime)
 
-        if exists:
-            form.add_error('table', 'Этот стол уже забронирован на выбранное время')
+        if selected_datetime < almaty_now:
+            form.add_error('booking_time', 'Нельзя выбрать прошедшее время.')
         else:
-            booking = form.save(commit=False)
-            booking.customer = request.user
-            booking.save()
-            return redirect('booking_list')
+            exists = BookingTable.objects.filter(
+                table=table,
+                booking_date=booking_date,
+                booking_time=booking_time
+            ).exists()
+
+            if exists:
+                form.add_error('table', 'Этот стол уже забронирован на выбранное время')
+            else:
+                booking = form.save(commit=False)
+                booking.customer = request.user
+                booking.save()
+                return redirect('booking_list')
 
     return render(request, 'booking/booking_form.html', {
         'form': form,
@@ -178,9 +189,6 @@ def booking_delete(request, pk):
 def no_permission_view(request):
     return render(request, 'booking/no-permission.html')
 
-from .models import PhoneVerification
-from .utils import send_sms
-from django.contrib.auth.models import User
 
 def register_phone_view(request):
     if request.method == "POST":
@@ -244,7 +252,6 @@ def resend_code_view(request):
 
     return JsonResponse({"message": "Код отправлен заново"})
 
-from django.shortcuts import render
 
 def test_home(request):
     return render(request, 'homehome.html')

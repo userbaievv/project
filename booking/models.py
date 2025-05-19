@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from datetime import timedelta
 import random
+from django.conf import settings
 
 class Restaurant(models.Model):
     name = models.CharField(max_length=100)
@@ -45,7 +46,6 @@ class Reservation(models.Model):
     def __str__(self):
         return f"{self.customer_name} - {self.date}"
 
-from django.conf import settings
 
 class BookingTable(models.Model):
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

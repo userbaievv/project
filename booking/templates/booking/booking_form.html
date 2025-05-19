@@ -184,4 +184,34 @@ function showFloor(floor) {
   document.getElementById(`floor-${floor}`).classList.remove('d-none');
 }
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const dateInput = document.querySelector('input[type="date"]');
+  const timeInput = document.querySelector('input[type="time"]');
+
+  const now = new Date().toLocaleString("en-US", { timeZone: "Asia/Almaty" });
+  const almatyNow = new Date(now);
+
+  const yyyy = almatyNow.getFullYear();
+  const mm = String(almatyNow.getMonth() + 1).padStart(2, '0');
+  const dd = String(almatyNow.getDate()).padStart(2, '0');
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+  dateInput.min = todayStr;
+
+  function updateMinTime() {
+    const selectedDate = dateInput.value;
+    if (selectedDate === todayStr) {
+      const hh = String(almatyNow.getHours()).padStart(2, '0');
+      const min = String(almatyNow.getMinutes()).padStart(2, '0');
+      timeInput.min = `${hh}:${min}`;
+    } else {
+      timeInput.removeAttribute('min');
+    }
+  }
+
+  dateInput.addEventListener('change', updateMinTime);
+  updateMinTime();
+});
+</script>
+
 {% endblock %}
